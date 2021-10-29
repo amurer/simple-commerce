@@ -104,10 +104,10 @@ class EloquentCoupon implements CouponContract
     public function slug(?string $slug = null)
     {
         if (! $slug) {
-            return $this->slug;
+            return $this->code;
         }
 
-        $this->slug = $slug;
+        $this->code = $slug;
         return $this;
     }
 
