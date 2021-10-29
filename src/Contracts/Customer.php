@@ -12,6 +12,8 @@ interface Customer
 
     public function find($id): self;
 
+    public function findByEmail(string $email): self;
+
     public function create(array $data = [], string $site = ''): self;
 
     public function save(): self;
@@ -41,8 +43,6 @@ interface Customer
     public function set(string $key, $value);
 
     public function toArray(): array;
-
-    public function findByEmail(string $email): self;
 
     public function name(): string;
 
