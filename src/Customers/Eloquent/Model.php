@@ -2,7 +2,9 @@
 
 namespace DoubleThreeDigital\SimpleCommerce\Customers\Eloquent;
 
+use DoubleThreeDigital\SimpleCommerce\SimpleCommerce;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Model extends EloquentModel
 {
@@ -12,9 +14,8 @@ class Model extends EloquentModel
         'name', 'email',
     ];
 
-    public function orders()
+    public function orders(): HasMany
     {
-        // return $this->hasMany(Order)
-        // return $this->hasMany(config('simple-commerce.models.order'));
+        return $this->hasMany(SimpleCommerce::orderDriver()['model']);
     }
 }
