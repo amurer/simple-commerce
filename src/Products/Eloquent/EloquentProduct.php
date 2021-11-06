@@ -6,6 +6,7 @@ use DoubleThreeDigital\SimpleCommerce\SimpleCommerce;
 use DoubleThreeDigital\SimpleCommerce\Contracts\Product as ProductContract;
 use DoubleThreeDigital\SimpleCommerce\Exceptions\ProductNotFound;
 use DoubleThreeDigital\SimpleCommerce\Facades\TaxCategory as TaxCategoryFacade;
+use DoubleThreeDigital\SimpleCommerce\Http\Resources\GenericResource;
 use DoubleThreeDigital\SimpleCommerce\Products\ProductVariant;
 use DoubleThreeDigital\SimpleCommerce\Tax\Standard\TaxCategory;
 use Illuminate\Support\Arr;
@@ -67,7 +68,7 @@ class EloquentProduct implements ProductContract
 
     public function toResource()
     {
-        // TODO: Implement toResource() method.
+        return new GenericResource($this);
     }
 
     public function toAugmentedArray($keys = null)

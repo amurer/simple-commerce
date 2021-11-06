@@ -6,6 +6,7 @@ use DoubleThreeDigital\SimpleCommerce\Contracts\Coupon as CouponContract;
 use DoubleThreeDigital\SimpleCommerce\Contracts\Order as ContractsOrder;
 use DoubleThreeDigital\SimpleCommerce\Exceptions\CouponNotFound;
 use DoubleThreeDigital\SimpleCommerce\Facades\Order;
+use DoubleThreeDigital\SimpleCommerce\Http\Resources\GenericResource;
 use DoubleThreeDigital\SimpleCommerce\SimpleCommerce;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -76,7 +77,7 @@ class EloquentCoupon implements CouponContract
 
     public function toResource()
     {
-        // TODO: Implement toResource() method.
+        return new GenericResource($this);
     }
 
     public function toAugmentedArray($keys = null)

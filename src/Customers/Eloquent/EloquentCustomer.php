@@ -4,6 +4,7 @@ namespace DoubleThreeDigital\SimpleCommerce\Customers\Eloquent;
 
 use DoubleThreeDigital\SimpleCommerce\Contracts\Customer as CustomerContract;
 use DoubleThreeDigital\SimpleCommerce\Exceptions\CustomerNotFound;
+use DoubleThreeDigital\SimpleCommerce\Http\Resources\GenericResource;
 use DoubleThreeDigital\SimpleCommerce\SimpleCommerce;
 use Illuminate\Support\Collection;
 use Statamic\Support\Arr;
@@ -76,7 +77,7 @@ class EloquentCustomer implements CustomerContract
 
     public function toResource()
     {
-        // TODO: Implement toResource() method.
+        return new GenericResource($this);
     }
 
     public function toAugmentedArray($keys = null)

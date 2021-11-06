@@ -2,11 +2,13 @@
 
 namespace DoubleThreeDigital\SimpleCommerce\Orders\Eloquent;
 
+use DoubleThreeDigital\SimpleCommerce\Contracts\Calculator;
 use DoubleThreeDigital\SimpleCommerce\Contracts\Order as OrderContract;
 use DoubleThreeDigital\SimpleCommerce\Events\CouponRedeemed;
 use DoubleThreeDigital\SimpleCommerce\Events\OrderPaid;
 use DoubleThreeDigital\SimpleCommerce\Facades\Coupon;
 use DoubleThreeDigital\SimpleCommerce\Facades\Customer;
+use DoubleThreeDigital\SimpleCommerce\Http\Resources\GenericResource;
 use DoubleThreeDigital\SimpleCommerce\Orders\Address;
 use DoubleThreeDigital\SimpleCommerce\SimpleCommerce;
 use Illuminate\Support\Arr;
@@ -60,9 +62,11 @@ class EloquentOrder implements OrderContract
 
     public function save(): OrderContract
     {
-        $this->model = $this->model->update(array_merge($this->data, [
+        $this->model->update(array_merge($this->data, [
             'orderNumber' => $this->orderNumber,
         ]));
+
+        $this->model = $this->model->fresh();
 
         return $this->hydrateFromModel($this->model);
     }
@@ -74,7 +78,7 @@ class EloquentOrder implements OrderContract
 
     public function toResource()
     {
-        // TODO: Implement toResource() method.
+        return new GenericResource($this);
     }
 
     public function toAugmentedArray($keys = null)
@@ -267,7 +271,7 @@ class EloquentOrder implements OrderContract
 
     public function recalculate(): self
     {
-        $calculate = resolve(CalculatorContract::class)->calculate($this);
+        $calculate = resolve(Calculator::class)->calculate($this);
 
         $this->data($calculate);
 
@@ -295,7 +299,9 @@ class EloquentOrder implements OrderContract
 
     public function lineItems(): Collection
     {
-        return $this->model->lineItems;
+        return $this->model->lineItems->map(function ($lineItem) {
+            return $lineItem->toArray();
+        });
     }
 
     public function lineItem($lineItemId): array
@@ -305,7 +311,7 @@ class EloquentOrder implements OrderContract
 
     public function addLineItem(array $lineItemData): array
     {
-        $lineItem = $this->lineItems()->create($lineItemData);
+        $lineItem = $this->model->lineItems()->create($lineItemData);
 
         if (! $this->withoutRecalculating) {
             $this->recalculate();
