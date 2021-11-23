@@ -2,6 +2,7 @@
 
 namespace DoubleThreeDigital\SimpleCommerce\Contracts;
 
+use DoubleThreeDigital\SimpleCommerce\Orders\LineItem;
 use Illuminate\Support\Collection;
 
 interface Order
@@ -64,11 +65,11 @@ interface Order
 
     public function lineItems(): Collection;
 
-    public function lineItem($lineItemId): array;
+    public function lineItem($lineItemId): LineItem;
 
-    public function addLineItem(array $lineItemData): array;
+    public function addLineItem(LineItem $lineItem): LineItem;
 
-    public function updateLineItem($lineItemId, array $lineItemData): array;
+    public function updateLineItem($lineItemId, array $lineItemData): LineItem;
 
     public function removeLineItem($lineItemId): Collection;
 

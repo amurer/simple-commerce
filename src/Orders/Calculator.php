@@ -33,7 +33,7 @@ class Calculator implements Contract
 
         $data['items'] = $order
             ->lineItems()
-            ->map(function ($lineItem) use (&$data) {
+            ->map(function (LineItem $lineItem) use (&$data) {
                 $calculate = $this->calculateLineItem($data, $lineItem);
 
                 $data      = $calculate['data'];
@@ -41,7 +41,7 @@ class Calculator implements Contract
 
                 return $lineItem;
             })
-            ->map(function ($lineItem) use (&$data) {
+            ->map(function (LineItem $lineItem) use (&$data) {
                 $calculate = $this->calculateLineItemTax($data, $lineItem);
 
                 $data      = $calculate['data'];
@@ -49,8 +49,8 @@ class Calculator implements Contract
 
                 return $lineItem;
             })
-            ->each(function ($lineItem) use (&$data) {
-                $data['items_total'] += $lineItem['total'];
+            ->each(function (LineItem $lineItem) use (&$data) {
+                $data['items_total'] += $lineItem->total();
             })
             ->toArray();
 
@@ -63,9 +63,9 @@ class Calculator implements Contract
         return $data;
     }
 
-    public function calculateLineItem(array $data, array $lineItem): array
+    public function calculateLineItem(array $data, LineItem $lineItem): array
     {
-        $product = ProductAPI::find($lineItem['product']);
+        $product = $lineItem->product();
 
         if ($product->purchasableType() === 'variants') {
             $variant = $product->variant(
@@ -98,7 +98,7 @@ class Calculator implements Contract
         // Ensure we strip any decimals from price
         $productPrice = (int) str_replace('.', '', (string) $productPrice);
 
-        $lineItem['total'] = ($productPrice * $lineItem['quantity']);
+        $lineItem->total(($productPrice * $lineItem['quantity']));
 
         return [
             'data' => $data,
@@ -106,9 +106,9 @@ class Calculator implements Contract
         ];
     }
 
-    public function calculateLineItemTax(array $data, array $lineItem): array
+    public function calculateLineItemTax(array $data, LineItem $lineItem): array
     {
-        $product = ProductAPI::find($lineItem['product']);
+        $product = $lineItem->product();
 
         $taxConfiguration = collect(Config::get('simple-commerce.sites'))
             ->get(Site::current()->handle())['tax'];

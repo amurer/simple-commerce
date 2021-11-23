@@ -9,6 +9,7 @@ use DoubleThreeDigital\SimpleCommerce\Http\Requests\CartItem\DestroyRequest;
 use DoubleThreeDigital\SimpleCommerce\Http\Requests\CartItem\StoreRequest;
 use DoubleThreeDigital\SimpleCommerce\Http\Requests\CartItem\UpdateRequest;
 use DoubleThreeDigital\SimpleCommerce\Orders\Cart\Drivers\CartDriver;
+use DoubleThreeDigital\SimpleCommerce\Orders\LineItem;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Statamic\Facades\Site;
@@ -127,25 +128,15 @@ class CartItemController extends BaseActionController
                 'quantity' => (int) $alreadyExistsQuery->first()['quantity'] + $request->quantity,
             ]);
         } else {
-            $item = [
-                'product'  => $request->product,
-                'quantity' => (int) $request->quantity,
-                'total'    => 0000,
-            ];
+            $item = new LineItem;
+            $item->product($request->get('product'));
+            $item->quantity((int) $request->get('quantity'));
 
             if ($request->has('variant')) {
-                $item['variant'] = [
-                    'variant' => $request->variant,
-                    'product' => $request->product,
-                ];
+                $item->variant($request->get('variant'));
             }
 
-            $item = array_merge(
-                $item,
-                [
-                    'metadata' => Arr::except($request->all(), $this->reservedKeys),
-                ]
-            );
+            $item->metadata(Arr::except($request->all(), $this->reservedKeys));
 
             $cart->addLineItem($item);
         }

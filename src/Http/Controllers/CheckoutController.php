@@ -47,7 +47,7 @@ class CheckoutController extends BaseActionController
                 ->postCheckout();
         } catch (CheckoutProductHasNoStockException $e) {
             $lineItem = $this->cart->lineItems()->filter(function ($lineItem) use ($e) {
-                return $lineItem['product'] === $e->product->id();
+                return $lineItem->product()->id() === $e->product->id();
             })->first();
 
             $this->cart->removeLineItem($lineItem['id']);
@@ -160,7 +160,7 @@ class CheckoutController extends BaseActionController
     {
         $this->cart->lineItems()
             ->each(function ($item) {
-                $product = Product::find($item['product']);
+                $product = $item->product();
 
                 if ($product->purchasableType() === 'product') {
                     if ($product->has('stock') && $product->get('stock') !== null) {

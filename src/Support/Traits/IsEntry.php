@@ -98,6 +98,8 @@ trait IsEntry
             $data['title'] = $this->title;
         }
 
+        dump($this->data());
+
         $this->entry
             ->collection($this->collection())
             ->slug($this->slug)

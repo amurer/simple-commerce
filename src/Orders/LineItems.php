@@ -12,30 +12,56 @@ trait LineItems
             return collect();
         }
 
-        return collect($this->get('items'));
+        return collect($this->get('items'))->map(function ($item) {
+            $lineItem = (new LineItem)
+                ->id($item['id'])
+                ->product($item['product'])
+                ->quantity($item['quantity'])
+                ->total($item['total']);
+
+            if (isset($item['variant'])) {
+                $lineItem = $lineItem->variant($item['variant']);
+            }
+
+            if (isset($item['metadata'])) {
+                $lineItem = $lineItem->metadata($item['metadata']);
+            }
+
+            // dump('grab bag', $item, $lineItem);
+            dump($this->entry->path());
+            dump('----');
+
+            return $lineItem;
+        });
     }
 
-    public function lineItem($lineItemId): array
+    public function lineItem($lineItemId): LineItem
     {
         return $this->lineItems()
             ->firstWhere('id', $lineItemId);
     }
 
-    public function addLineItem(array $lineItemData): array
+    public function addLineItem(LineItem $lineItem): LineItem
     {
-        $lineItemData['id'] = app('stache')->generateId();
+        if (! $lineItem->id()) {
+            $lineItem->id(app('stache')->generateId());
+        }
 
         $this->data([
-            'items' => array_merge($this->lineItems()->toArray(), [$lineItemData]),
+            'items' => $this->lineItems()->push($lineItem)->map(function (LineItem $item) {
+                return $item->fileData();
+            })->toArray(),
         ]);
 
         $this->save();
         $this->recalculate();
 
-        return $this->lineItem($lineItemData['id']);
+        dd($this->get('items'), $this->entry->path());
+
+        return $this->lineItem($lineItem->id());
     }
 
-    public function updateLineItem($lineItemId, array $lineItemData): array
+    public function updateLineItem($lineItemId, array $lineItemData): LineItem
     {
         $this->data([
             'items' => $this->lineItems()

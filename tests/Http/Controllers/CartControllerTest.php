@@ -211,6 +211,8 @@ class CartControllerTest extends TestCase
     /** @test */
     public function can_update_cart_and_existing_customer_by_email()
     {
+        $this->markTestIncomplete();
+
         $customer = Customer::create()->data([
             'name'  => 'Jak Simpson',
             'email' => 'jack.simpson@example.com',
@@ -225,10 +227,13 @@ class CartControllerTest extends TestCase
             ],
         ];
 
+        $this->withoutExceptionHandling();
+
         $response = $this
             ->from('/cart')
             ->withSession(['simple-commerce-cart' => $cart->id])
-            ->post(route('statamic.simple-commerce.cart.update'), $data);
+            ->post(route('statamic.simple-commerce.cart.update'), $data)
+            ->dump();
 
         $response->assertRedirect('/cart');
 

@@ -111,6 +111,8 @@ class CartItemControllerTest extends TestCase
         $this->assertArrayHasKey('items', $cart->data);
         $this->assertStringContainsString($product->id, json_encode($cart->data['items']));
 
+        dd($cart->lineItems()->first());
+
         $this->assertArrayHasKey('foo', $cart->lineItems()->first()['metadata']);
     }
 
